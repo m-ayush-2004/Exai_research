@@ -1,3 +1,11 @@
 /results
 /test
 /Datasets/weights/inceptionv3/Brain-Tumor/Brain-Tumor.h5
+/Datasets/weights/resnet50/Brain-Tumor/Brain-Tumor.h5
+/Datasets/weights/multi-header-cnn/Brain-Tumor/Brain-Tumor.h5
+/Datasets/weights/inceptionv3/Lung-Adenocarcinoma/Lung-Adenocarcinoma.h5
+/Datasets/weights/resnet50/Lung-Adenocarcinoma/Lung-Adenocarcinoma.h5
+/Datasets/weights/multi-header-cnn/Lung-Adenocarcinoma/Lung-Adenocarcinoma.h5
+/Datasets/weights/inceptionv3/Colon-Adenocarcinoma/Colon-Adenocarcinoma.h5
+/Datasets/weights/resnet50/Colon-Adenocarcinoma/Colon-Adenocarcinoma.h5
+/Datasets/weights/multi-header-cnn/Colon-Adenocarcinoma/Colon-Adenocarcinoma.h5
