@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Custom Model</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/style_sheets.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="#">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+                 alt="Logo"> <!-- Replace with your logo URL -->
+            Medical Dashboard
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospitals">Hospitals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search">Disease Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/predict">AI Prediction</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1>Add Custom Deep Learning Model</h1>
+
+        <!-- Display Success Message -->
+        {% if success_message %}
+        <div class="alert alert-success mt-3">
+            {{ success_message }}
+        </div>
+        {% endif %}
+
+        <!-- Display Error Message -->
+        {% if error_message %}
+        <div class="alert alert-danger mt-3">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <form action="/add_custom_dl_model" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="model_name">Model Name:</label>
+                <input type="text" class="form-control" id="model_name" name="model_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="weights_folder">Select Weights Files:</label>
+                <input type="file" class="form-control-file" id="weights_folder" name="weights_folder" accept=".h5"
+                       required multiple><br><br>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Upload Weights</button>
+
+                <a href="/deep_learning" class="btn btn-secondary">Go to Available Deep Learning</a>
+        </form>
+
+        <br><br><br>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

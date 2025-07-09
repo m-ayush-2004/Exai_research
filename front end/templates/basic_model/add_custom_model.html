@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Custom Model</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/style_sheets.css">
+
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="#">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+                alt="Logo"> <!-- Replace with your logo URL -->
+            Medical Dashboard
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospitals">Hospitals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search">Disease Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/predict">AI Prediction</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="mt-4">Add Custom Model</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="model_name">Model Name</label>
+                <input type="text" class="form-control" id="model_name" name="model_name" required>
+            </div>
+            <div class="form-group">
+                <label for="target_column">Target Column</label>
+                <input type="text" class="form-control" id="target_column" name="target_column" required>
+            </div>
+            <div class="form-group">
+                <label for="file">Dataset (CSV)</label>
+                <input type="file" class="form-control-file" id="file" name="file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload and Train Model</button>
+        </form>
+    </div>
+    
+        <!-- Error Message Div -->
+        {% if error_message %}
+        <div class="error-div alert alert-danger" style="display:block; margin-top: 20px; padding: 15px; border-radius: 5px;">
+            <h4 class="alert-heading">Oops! Something went wrong.</h4>
+            <p><strong>Error:</strong> {{ error_message }}</p>
+            <hr>
+            <p><strong>Suggestions to resolve the issue:</strong></p>
+            <ul>
+                <li>🔍 Ensure that your data is accurate and formatted correctly.</li>
+                <li>📋 Double-check the names of your columns for any discrepancies.</li>
+                <li>📂 Only CSV files are supported for data uploads.</li>
+                <li>🔢 Ensure that all data is numeric; non-numeric data may be converted or cause errors.</li>
+                <li>🚫 Make sure there are no missing values in your dataset; fill or remove them before uploading.</li>
+            </ul>
+            <p>If you need further assistance, please consult the documentation or contact support.</p>
+        </div>
+        {% endif %}
+</body>
+
+</html>

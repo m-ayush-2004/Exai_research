@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #555;
+            text-align: center;
+        }
+        #heatmap {
+            display: block;
+            margin: 0 auto 20px; /* Center the image */
+            max-width: 100%; /* Responsive image */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Subtle shadow */
+        }
+        #plot {
+            width: 100%; /* Full width */
+            height: 600px; /* Fixed height for the plot */
+            margin-top: 20px; /* Space above the plot */
+        }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            padding: 5px;
+            display: none; /* Hidden by default */
+            z-index: 20; /* Above segments */
+            pointer-events: none; /* Prevent mouse events */
+            transition: opacity 0.3s;
+            border-radius: 5px;
+        }
+  #lime-plot {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .segment-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 8px;
+  }
+  
+  #segment-list li {
+    cursor: pointer;
+    padding: 8px;
+    transition: all 0.2s;
+  }
+  
+  #segment-list li:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .disabled-segment {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+  
+  .segment-weight {
+    float: right;
+    color: #666;
+    font-family: monospace;
+  }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <a class="navbar-brand" href="/">
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+          alt="Logo" style="width:30px; height:auto;">
+        Medical Dashboard
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse"
+        data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-center"
+        id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/news">News</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/hospitals">Hospitals</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/models">AI Prediction</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <br><br><br>
+    <h1>Prediction Heatmap</h1>
+
+    <h2>Generated Heatmap:</h2>
+    <img
+      src="{{ url_for('static', filename='shap_plots/' + heatmap_path.split('/')[-1]) }}"
+      alt="Heatmap" id="heatmap">
+
+    <div id="lime-plot"></div>
+    <div id="segment-panel">
+      <h4>Segments</h4>
+      <ul id="segment-list"></ul>
+      <div id="segment-details">
+        <p>ID: <span id="segment-id">-</span></p>
+        <p>Weight: <span id="segment-weight">-</span></p>
+        <p>Rank: <span id="segment-rank">-</span></p>
+        <p>Coordinates: <span id="segment-coords">-</span></p>
+      </div>
+    </div>
+
+    <!-- Add this CSS to your stylesheet -->
+
+  </body>
+  <script>
+// Initialize Plotly graph with LIME segmentation data
+const graphJson = {{ graph_json | safe }};
+
+// Enhanced configuration for medical imaging visualization
+const layoutConfig = {
+  responsive: true,
+  displayModeBar: true,
+  modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'hoverClosestCartesian'],
+  modeBarButtonsToAdd: ['drawclosedpath', 'eraseshape'],
+  scrollZoom: true
+};
+
+// Create the plot with specialized medical imaging settings
+Plotly.newPlot('lime-plot', graphJson.data, graphJson.layout, layoutConfig);
+
+// Get plot element reference
+const limePlotDiv = document.getElementById('lime-plot');
+
+// Custom hover handler for LIME segments
+limePlotDiv.on('plotly_hover', function(eventData) {
+  const point = eventData.points[0];
+  const segmentData = {
+    id: point.customdata[0],
+    weight: point.customdata[1],
+    rank: point.customdata[2],
+    x: Math.round(point.x),
+    y: Math.round(point.y)
+  };
+  
+  // Update side panel display
+  document.getElementById('segment-id').textContent = segmentData.id;
+  document.getElementById('segment-weight').textContent = segmentData.weight.toFixed(4);
+  document.getElementById('segment-rank').textContent = segmentData.rank;
+  document.getElementById('segment-coords').textContent = `${segmentData.x}, ${segmentData.y}`;
+  
+  // Highlight corresponding segment
+  Plotly.Fx.hover('lime-plot', [
+    { curveNumber: point.curveNumber, pointNumber: point.pointNumber }
+  ]);
+});
+
+// Custom click handler for segment selection
+limePlotDiv.on('plotly_click', function(eventData) {
+  const point = eventData.points[0];
+  const segmentId = point.customdata[0];
+  
+  // Toggle segment visibility
+  const visible = graphJson.data[point.curveNumber].visible;
+  Plotly.restyle('lime-plot', {visible: !visible}, [point.curveNumber]);
+  
+  // Update segment list styling
+  const listItem = document.querySelector(`#segment-list li[data-segment-id="${segmentId}"]`);
+  if (listItem) {
+    listItem.classList.toggle('disabled-segment');
+  }
+});
+
+// Handle window resize for responsive design
+window.addEventListener('resize', function() {
+  Plotly.Plots.resize('lime-plot');
+});
+
+// Initialize segment list sidebar
+function initSegmentList() {
+  const segmentList = document.getElementById('segment-list');
+  graphJson.data.forEach((trace, index) => {
+    if (trace.name) {
+      const li = document.createElement('li');
+      li.dataset.segmentId = trace.customdata[0][0];
+      li.innerHTML = `
+        <span class="segment-color" style="background:${trace.line.color}"></span>
+        ${trace.name}
+        <span class="segment-weight">${trace.customdata[0][1].toFixed(4)}</span>
+      `;
+      li.addEventListener('click', () => toggleSegmentVisibility(index));
+      segmentList.appendChild(li);
+    }
+  });
+}
+
+function toggleSegmentVisibility(curveNumber) {
+  const currentVisibility = graphJson.data[curveNumber].visible;
+  Plotly.restyle('lime-plot', {visible: !currentVisibility}, [curveNumber]);
+}
+
+// Initialize after plot renders
+limePlotDiv.on('plotly_afterplot', function() {
+  initSegmentList();
+  console.log('LIME visualization initialized');
+});
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'h') {
+    Plotly.relayout('lime-plot', 'hovermode', 
+      limePlotDiv.layout.hovermode === 'closest' ? false : 'closest'
+    );
+  }
+});
+</script>
+</html>

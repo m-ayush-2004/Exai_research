@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Model Visualizations - {{ model_name }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            background-color: #f9f9f9;
+            padding-top: 70px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+        }
+
+        .heading {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 30px;
+        }
+
+        .visualization-section {
+            margin-top: 40px;
+        }
+
+        .navbar-brand img {
+            height: 40px !important;
+        }
+    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/style_sheets.css">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="/">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+                alt="Logo"> <!-- Replace with your logo URL -->
+            Medical Dashboard
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospitals">Hospitals</a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" href="/search">Disease Search</a>
+                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/models">AI Prediction</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="heading">Visualizations for {{ model_name | capitalize }}</h1>
+
+        <!-- Confusion Matrix Visualization -->
+        <div class="visualization-section">
+            <h3>Confusion Matrix</h3>
+            <p>A matrix showing the prediction accuracy for each class.</p>
+            <div id="confusion-matrix"></div>
+        </div>
+
+        <!-- Pair Plot Visualization -->
+        <div class="visualization-section">
+            <h3>Pair Plot</h3>
+            <p>A pairplot is a powerful data visualization tool used to explore and understand the pairwise relationships between multiple variables in a dataset. It is particularly useful in the context of exploratory data analysis, allowing analysts to quickly visualize correlations and distributions among variables.</p>
+            <img src="{{ url_for('static', filename='shap_plots/' + pair_plot_path.split('/')[-1]) }}" alt="Pair Plot" style="width: 100%; height: auto;">
+        </div>
+
+        <!-- SHAP Plot Visualization -->
+        <div class="visualization-section">
+            <h3>SHAP Summary Plot</h3>
+            <p>A SHAP summary plot is a visualization tool used to interpret the output of machine learning models by displaying the importance and effect of each feature on the model's predictions. SHAP (SHapley Additive exPlanations) values quantify how much each feature contributes to the final prediction for each instance in the dataset.</p>
+            <img src="{{ url_for('static', filename='shap_plots/' + shap_plot_path.split('/')[-1]) }}" alt="SHAP Summary Plot" style="width: 100%; height: auto;">
+        </div>
+
+        <!-- Correlation Plot Visualization -->
+        <div class="visualization-section">
+            <h3>Correlation Plot</h3>
+            <p>A correlation plot is a graphical representation that illustrates the relationship between two or more variables. It visually conveys how changes in one variable are associated with changes in another, allowing for the identification of patterns, trends, and potential correlations.</p>
+            <img src="{{ url_for('static', filename='shap_plots/' + corr.split('/')[-1]) }}" alt="Correlation Plot" style="width: 100%; height: auto;">
+        </div>
+
+        <!-- Insights Section -->
+        <div class="visualization-section">
+            <h3>Model Insights</h3>
+            {{ report_summary | safe}} <!-- Render insights from create_visualizations -->
+        </div>
+        <!-- Form for Predictions -->
+        <form action="/basic_models" method="get">
+          <button type="submit" class="btn btn-primary">Get Started with Predictions</button>
+        </form>
+    </div>
+
+    <script>
+        // Load JSON data passed from Flask
+        const figCmJson = {{ fig_cm | safe }};
+
+        // Render Confusion Matrix Plotly plot
+        Plotly.newPlot('confusion-matrix', figCmJson.data, figCmJson.layout);
+    </script>
+</body>
+
+</html>

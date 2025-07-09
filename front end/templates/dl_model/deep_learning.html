@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Learning Models</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/style_sheets.css">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .heading {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .section-title {
+            color: #343a40;
+            margin-top: 30px;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            margin-top: 20px;
+        }
+
+        .pipeline-diagram {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="/">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+                alt="Logo"> <!-- Replace with your logo URL -->
+            Medical Dashboard
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospitals">Hospitals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search">Disease Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/predict">AI Prediction</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="heading">Choose a Model for Disease Prediction</h1>
+
+        <form action="{{ url_for('predict_dl') }}" method="post" enctype="multipart/form-data" class="mb-4">
+            <h3 class="section-title">Select a Deep Learning Model</h3>
+            <p class="info-text">
+                Select one of the pre-trained models below to generate predictions for specific diseases.
+                Upload an image and then click "Predict" to get results.
+            </p>
+
+            <div class="form-group">
+                <label for="selected_model">Choose Model:</label>
+                <select name="model_name" id="selected_model" class="form-control" required onchange="showInputs()">
+                    <option value="">Select Model</option>
+                    {% for model in models.keys() %}
+                    <option value="{{ model }}">{{ model.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Input fields will be dynamically generated here -->
+            <div id="input-fields" class="form-group"></div>
+
+            <!-- File upload field -->
+            <div class="form-group">
+                <label for="image_file">Upload Image:</label>
+                <input type="file" name="image_file" id="image_file" accept=".jpg,.jpeg,.png,.bmp" required class="form-control">
+                <small class="form-text text-muted">Images should be resized to 224x224 pixels.</small>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-custom">Predict</button>
+        </form>
+
+        <!-- Section to add a custom model -->
+        <h3 class="section-title">Add a Custom Model</h3>
+        <p class="info-text">
+            Don't see the model you need? Add your custom dataset to train a new model. This will allow our system
+            to create a tailored model for you automatically. Simply upload your dataset, specify the target
+            column, and let the system handle the rest.
+        </p>
+
+        <!-- Form for adding custom models -->
+        <form action="{{ url_for('add_custom_dl_model') }}" method="get" enctype="multipart/form-data">
+            <button type="submit" class="btn btn-custom">Add Custom Model</button>
+        </form>
+
+        <!-- Pipeline Overview -->
+        <div class="pipeline-diagram mt-5">
+            <h3>Pipeline Overview</h3>
+            <p>This is how our system processes images and models:</p>
+            
+             <!-- Visual representation of the pipeline -->
+             <img src="../static/pipeline_diagram.png" alt="Pipeline Diagram" style="width:100%; height:auto;">
+             <!-- Example of pipeline steps -->
+             <!-- 
+              User Uploads Images → Preprocessing (Resize & Normalize) → Model Training →
+              User Uploads Weights → Update Configuration File → User Makes Predictions →
+              Generate LIME Explanations
+             -->
+            
+             <!-- Description of each step in the pipeline -->
+             <ul style='list-style-type:none;'>
+                 <li><strong>User Uploads Images:</strong> Users can upload images that they want to analyze.</li>
+                 <li><strong>Preprocessing:</strong> Images are resized to 224x224 pixels and normalized.</li>
+                 <li><strong>Model Training:</strong> Users can train models on their datasets.</li>
+                 <li><strong>User Uploads Weights:</strong> Users can upload custom weights for their trained models.</li>
+                 <li><strong>Update Configuration File:</strong> The application updates its configuration with new models.</li>
+                 <li><strong>User Makes Predictions:</strong> Users can make predictions using selected models.</li>
+                 <li><strong>Generate LIME Explanations:</strong> The application provides explanations for predictions made by the model.</li>
+             </ul>
+
+         </div>
+
+    </div>
+
+    <!-- JavaScript to dynamically show input fields based on selected model -->
+    <script>
+        const models = {{ models | tojson }};
+
+        function showInputs() {
+            const selectedModel = document.getElementById('selected_model').value;
+            const inputFieldsDiv = document.getElementById('input-fields');
+            inputFieldsDiv.innerHTML = ''; // Clear previous inputs
+
+            if (selectedModel) {
+                const params = models[selectedModel].features; // Assuming features are defined in the config
+                params.forEach(param => {
+                    const label = document.createElement('label');
+                    label.innerText = param.charAt(0).toUpperCase() + param.slice(1) + ':';
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = param;
+                    input.className = 'form-control mb-2';
+                    input.placeholder = `Enter ${param}`;
+                    inputFieldsDiv.appendChild(label);
+                    inputFieldsDiv.appendChild(input);
+                });
+            }
+        }
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

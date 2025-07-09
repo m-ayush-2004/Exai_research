@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deep Learning Prediction Results</title>
+</head>
+<body>
+
+<div class="container mt-5 pt-5">
+    <h1>Deep Learning Prediction Results</h1>
+
+    {% if prediction %}
+        <p>{{ prediction }}</p>
+    {% else %}
+        <p>No prediction was made.</p>
+    {% endif %}
+
+    <a href="{{ url_for('deep_learning') }}" class="btn btn-primary">Make Another Prediction</a>
+</div>
+
+</body>
+</html>

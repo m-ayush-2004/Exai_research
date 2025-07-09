@@ -1,0 +1,7 @@
+{
+    "models": {
+        "Brain Tumor": "Back end\\weights\\Brain Tumor2\\ckpt2",
+        "COVID-19": "Back end\\weights\\COVID-19\\ckpt3",
+        "Brain Tumor2": "Back end\\weights\\Brain Tumor2\\ckpt2"
+    }
+}

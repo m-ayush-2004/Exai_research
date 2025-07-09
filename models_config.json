@@ -1,0 +1,6 @@
+{
+    "models": {
+        "Brain Tumor": "weights\\Brain Tumor",
+        "ResNet50V2": "path/to/resnet_weights.h5"
+    }
+}

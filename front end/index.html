@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Medical Image Processor</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f8ff; /* Alice Blue */
+        }
+        .navbar {
+            background-color: #007bff; /* Bootstrap Primary Blue */
+        }
+        .navbar-brand {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .form-container {
+            margin-top: 50px;
+        }
+        .form-container h1 {
+            color: #343a40;
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #28a745; /* Green (medical) */
+            border: none;
+        }
+        footer {
+            margin-top: 50px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="#">Medical Image Processor</a>
+    </nav>
+
+    <!-- Form Container -->
+    <div class="container form-container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 upload-section">
+                <h1 class="text-center">Upload Medical Image</h1>
+                <form method="POST" action="/process" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="image">Choose an Image:</label>
+                        <input type="file" class="form-control-file" id="image" name="image" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Process Image</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Medical Imaging Inc.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
