@@ -1,173 +1,309 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deep Learning Models</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="../static/style_sheets.css">
-    <style>
-        body {
-            background-color: #f9f9f9;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Deep Learning Models</title>
+        <link rel="stylesheet"
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="../static/style_sheets.css">
+        <link rel="stylesheet" href="../static/dl.css">
+    </head>
 
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-        }
+    <body>
+        <!-- Navigation Bar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <a class="navbar-brand" href="/">
+                <img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+                    alt="Logo"> <!-- Replace with your logo URL -->
+                Medical Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center"
+                id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/news">News</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hospitals">Hospitals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search">Disease Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/predict">AI Prediction</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-        .heading {
-            text-align: center;
-            color: #007bff;
-        }
+        <div class="container mt-5">
+            <h1 class="heading">Choose a Model for Disease Prediction</h1>
 
-        .section-title {
-            color: #343a40;
-            margin-top: 30px;
-        }
+            <form action="{{ url_for('predict_dl') }}" method="post"
+                enctype="multipart/form-data" class="mb-4">
+                <h3 class="section-title">Select a Deep Learning Model</h3>
+                <p class="info-text">
+                    Select a disease, then pick a model to generate predictions.
+                    Upload an image and click "Predict".
+                </p>
 
-        .info-text {
-            font-size: 0.9rem;
-            color: #555;
-            margin-bottom: 15px;
-        }
+                <!-- Disease Dropdown -->
+                <div class="form-group">
+                    <label for="disease_select">Choose Disease:</label>
+                    <select name="disease_name" id="disease_select"
+                        class="form-control" required
+                        onchange="populateModels()">
+                        <option value>Select Disease</option>
+                        {% for disease in diseases.keys() %}
+                        <option value="{{ disease }}">{{ disease.capitalize()
+                            }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        .btn-custom {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            margin-top: 20px;
-        }
+                <!-- Model Dropdown (populated by JS) -->
+                <div class="form-group" id="model-group" style="display:none;">
+                    <label for="selected_model">Choose Model:</label>
+                    <select name="model_name" id="selected_model"
+                        class="form-control" required onchange="showInputs()">
+                        <option value>Select Model</option>
+                        <!-- JS will insert options here -->
+                    </select>
+                </div>
 
-        .pipeline-diagram {
-            margin-top: 30px;
-        }
-    </style>
-</head>
+                <!-- Input fields will be dynamically generated here -->
+                <div id="input-fields" class="form-group"></div>
 
-<body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-        <a class="navbar-brand" href="/">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
-                alt="Logo"> <!-- Replace with your logo URL -->
-            Medical Dashboard
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/news">News</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/hospitals">Hospitals</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/search">Disease Search</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/predict">AI Prediction</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+                <!-- File upload field: Drag and Drop with Dotted Border -->
+                <div class="form-group">
+                    <label for="image_file">Upload Image:</label>
+                    <div id="drop-area"
+                        class="d-flex flex-column align-items-center justify-content-center">
+                        <input type="file" name="image_file" id="image_file"
+                            accept=".jpg,.jpeg,.png,.bmp"
+                            required class="form-control-file"
+                            style="display:none;"
+                            onchange="handleFiles(this.files)">
+                        <div id="drop-text"
+                            onclick="document.getElementById('image_file').click();">
+                            <!-- SVG icon for image upload -->
+                        <svg class="upload-icon" viewBox="0 0 64 64" width="64"
+                            height="64" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <rect x="8" y="16" width="48" height="32" rx="4"
+                                fill="#4a90e2" />
+                            <rect x="8" y="16" width="48" height="32" rx="4"
+                                fill="url(#gradient)" />
+                            <circle cx="20" cy="28" r="4" fill="#fff" />
+                            <path d="M56 48L44 32L32 44L24 36L8 48"
+                                stroke="#fff" stroke-width="3"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <defs>
+                                <lineargradient id="gradient" x1="8" y1="16"
+                                    x2="56" y2="48"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#4a90e2" />
+                                    <stop offset="1" stop-color="#3068b7" />
+                                </lineargradient>
+                            </defs>
+                        </svg>'
+                        <br>
+                        <br>
+                        <br>
+                            <strong>Drag &amp; Drop image here</strong> or <span
+                                class="text-primary"
+                                style="cursor:pointer;">Browse</span>
+                            <br>
+                        </div>
+                        <div id="preview" style="margin-top:10px;"></div>
+                    </div>
+                </div>
 
-    <div class="container mt-5">
-        <h1 class="heading">Choose a Model for Disease Prediction</h1>
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-custom">Predict</button>
+            </form>
 
-        <form action="{{ url_for('predict_dl') }}" method="post" enctype="multipart/form-data" class="mb-4">
-            <h3 class="section-title">Select a Deep Learning Model</h3>
+            <!-- Section to add a custom model -->
+            <h3 class="section-title">Add a Custom Model</h3>
             <p class="info-text">
-                Select one of the pre-trained models below to generate predictions for specific diseases.
-                Upload an image and then click "Predict" to get results.
+                Don't see the model you need? Add your custom dataset to train a
+                new model. This will allow our system
+                to create a tailored model for you automatically. Simply upload
+                your dataset, specify the target
+                column, and let the system handle the rest.
             </p>
 
-            <div class="form-group">
-                <label for="selected_model">Choose Model:</label>
-                <select name="model_name" id="selected_model" class="form-control" required onchange="showInputs()">
-                    <option value="">Select Model</option>
-                    {% for model in models.keys() %}
-                    <option value="{{ model }}">{{ model.capitalize() }}</option>
-                    {% endfor %}
-                </select>
+            <!-- Form for adding custom models -->
+            <form action="{{ url_for('add_custom_dl_model') }}" method="get"
+                enctype="multipart/form-data">
+                <button type="submit" class="btn btn-custom">Add Custom
+                    Model</button>
+            </form>
+
+<!-- Pipeline Overview -->
+<div class="pipeline-diagram mt-5">
+    <h3 class="mb-4">Pipeline Overview</h3>
+    <p>This is how our system processes images and models:</p>
+    <img src="../static/pipeline_diagram.png" alt="Pipeline Diagram" style="width:100%; height:auto; margin-bottom:30px;">
+
+    <!-- Model Cards Section -->
+    <h4 class="mb-3">Available Deep Learning Models</h4>
+    <!-- Model Overview Section -->
+<div class="row">
+    <!-- VGG16 Card -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <a href="../static/architecture-diagrams/vgg-16.png" target="_blank">
+                <img src="../static/architecture-diagrams/vgg-16.png" class="card-img-top" alt="VGG16 Block Diagram" style="object-fit:cover; height:180px;">
+            </a>
+            <div class="card-body">
+                <h5 class="card-title text-primary">VGG16</h5>
+                <p>
+                    <strong>VGG16</strong> is a pioneering deep convolutional neural network introduced by the Visual Geometry Group at Oxford. It consists of 13 convolutional layers and 3 fully connected layers, all using small (3x3) filters and ReLU activations. Its uniform architecture and depth enable it to capture intricate spatial hierarchies in images. VGG16 is known for its simplicity, effectiveness, and high performance on image classification benchmarks like ImageNet.<br>
+                    <span class="text-muted" style="font-size:0.96em;">
+                        <a href="https://arxiv.org/abs/1409.1556" target="_blank">[Original Paper]</a> |
+                        <a href="https://arunangshudas.com/blog/vgg-architecture/" target="_blank">[Blog Explanation]</a>
+                    </span>
+                </p>
+                <ul class="list-unstyled mb-2">
+                    <li><i class="text-success">&#10003;</i> 16 layers (13 conv + 3 FC)</li>
+                    <li><i class="text-success">&#10003;</i> Uniform 3x3 convolutions</li>
+                    <li><i class="text-success">&#10003;</i> Effective for feature extraction</li>
+                    <li><i class="text-success">&#10003;</i> Pretrained on ImageNet</li>
+                </ul>
+                <a href="../static/architecture-diagrams/vgg-16.png" target="_blank" class="btn btn-outline-primary btn-sm">Block Diagram</a>
             </div>
-
-            <!-- Input fields will be dynamically generated here -->
-            <div id="input-fields" class="form-group"></div>
-
-            <!-- File upload field -->
-            <div class="form-group">
-                <label for="image_file">Upload Image:</label>
-                <input type="file" name="image_file" id="image_file" accept=".jpg,.jpeg,.png,.bmp" required class="form-control">
-                <small class="form-text text-muted">Images should be resized to 224x224 pixels.</small>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-custom">Predict</button>
-        </form>
-
-        <!-- Section to add a custom model -->
-        <h3 class="section-title">Add a Custom Model</h3>
-        <p class="info-text">
-            Don't see the model you need? Add your custom dataset to train a new model. This will allow our system
-            to create a tailored model for you automatically. Simply upload your dataset, specify the target
-            column, and let the system handle the rest.
-        </p>
-
-        <!-- Form for adding custom models -->
-        <form action="{{ url_for('add_custom_dl_model') }}" method="get" enctype="multipart/form-data">
-            <button type="submit" class="btn btn-custom">Add Custom Model</button>
-        </form>
-
-        <!-- Pipeline Overview -->
-        <div class="pipeline-diagram mt-5">
-            <h3>Pipeline Overview</h3>
-            <p>This is how our system processes images and models:</p>
-            
-             <!-- Visual representation of the pipeline -->
-             <img src="../static/pipeline_diagram.png" alt="Pipeline Diagram" style="width:100%; height:auto;">
-             <!-- Example of pipeline steps -->
-             <!-- 
-              User Uploads Images → Preprocessing (Resize & Normalize) → Model Training →
-              User Uploads Weights → Update Configuration File → User Makes Predictions →
-              Generate LIME Explanations
-             -->
-            
-             <!-- Description of each step in the pipeline -->
-             <ul style='list-style-type:none;'>
-                 <li><strong>User Uploads Images:</strong> Users can upload images that they want to analyze.</li>
-                 <li><strong>Preprocessing:</strong> Images are resized to 224x224 pixels and normalized.</li>
-                 <li><strong>Model Training:</strong> Users can train models on their datasets.</li>
-                 <li><strong>User Uploads Weights:</strong> Users can upload custom weights for their trained models.</li>
-                 <li><strong>Update Configuration File:</strong> The application updates its configuration with new models.</li>
-                 <li><strong>User Makes Predictions:</strong> Users can make predictions using selected models.</li>
-                 <li><strong>Generate LIME Explanations:</strong> The application provides explanations for predictions made by the model.</li>
-             </ul>
-
-         </div>
-
+        </div>
     </div>
+    <!-- ResNet50 Card -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <a href="../static/architecture-diagrams/resnet-50.png" target="_blank">
+                <img src="../static/architecture-diagrams/resnet-50.png" class="card-img-top" alt="ResNet50 Block Diagram" style="object-fit:cover; height:180px;">
+            </a>
+            <div class="card-body">
+                <h5 class="card-title text-primary">ResNet50</h5>
+                <p>
+                    <strong>ResNet50</strong> is a 50-layer deep residual network that revolutionized deep learning by introducing residual (skip) connections. These connections allow the network to train much deeper architectures by mitigating the vanishing gradient problem. ResNet50 employs bottleneck blocks (1x1, 3x3, 1x1 convolutions) and is highly effective for image classification, object detection, and feature extraction. Its modular structure makes it a popular backbone for transfer learning.<br>
+                    <span class="text-muted" style="font-size:0.96em;">
+                        <a href="https://arxiv.org/abs/1512.03385" target="_blank">[Original Paper]</a> |
+                        <a href="https://wandb.ai/mostafaibrahim17/ml-articles/reports/The-Basics-of-ResNet50---Vmlldzo2NDkwNDE2" target="_blank">[Blog Explanation]</a>
+                    </span>
+                </p>
+                <ul class="list-unstyled mb-2">
+                    <li><i class="text-success">&#10003;</i> 50 layers with skip connections</li>
+                    <li><i class="text-success">&#10003;</i> Bottleneck residual blocks</li>
+                    <li><i class="text-success">&#10003;</i> Robust to vanishing gradients</li>
+                    <li><i class="text-success">&#10003;</i> Excellent for transfer learning</li>
+                </ul>
+                <a href="../static/architecture-diagrams/resnet-50.png" target="_blank" class="btn btn-outline-primary btn-sm">Block Diagram</a>
+            </div>
+        </div>
+    </div>
+    <!-- Multi-Head CNN Card -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <a href="../static/diagrams/multiheadcnn_block_diagram.png" target="_blank">
+                <img src="../static/diagrams/multiheadcnn_block_diagram.png" class="card-img-top" alt="Multi-Head CNN Block Diagram" style="object-fit:cover; height:180px;">
+            </a>
+            <div class="card-body">
+                <h5 class="card-title text-primary">Multi-Head CNN</h5>
+                <p>
+                    <strong>Multi-Head CNN</strong> architectures use multiple parallel convolutional "heads" to extract diverse features from input data. Each head can specialize in a different aspect (e.g., texture, shape, or color), and their outputs are fused for robust predictions. Recent advances include attention mechanisms and depthwise separable convolutions for efficiency and accuracy. Multi-head designs are especially powerful for multi-task learning and complex image analysis.<br>
+                    <span class="text-muted" style="font-size:0.96em;">
+                        <a href="https://www.sciencedirect.com/science/article/abs/pii/S1568494621005925" target="_blank">[Research Paper]</a> |
+                        <a href="https://blog.marvik.ai/2022/12/13/first-steps-in-implementing-a-multi-head-architecture/" target="_blank">[Blog Explanation]</a>
+                    </span>
+                </p>
+                <ul class="list-unstyled mb-2">
+                    <li><i class="text-success">&#10003;</i> Multiple parallel convolutional branches</li>
+                    <li><i class="text-success">&#10003;</i> Captures diverse features</li>
+                    <li><i class="text-success">&#10003;</i> Often enhanced with attention modules</li>
+                    <li><i class="text-success">&#10003;</i> Efficient for multi-task learning</li>
+                </ul>
+                <a href="../static/diagrams/multiheadcnn_block_diagram.png" target="_blank" class="btn btn-outline-primary btn-sm">Block Diagram</a>
+            </div>
+        </div>
+    </div>
+    <!-- Add more models here in the same format as they are integrated -->
+</div>
 
-    <!-- JavaScript to dynamically show input fields based on selected model -->
-    <script>
+
+    <!-- Example of pipeline steps -->
+    <h4 class="mt-5">How the Pipeline Works</h4>
+    <ul class="list-group list-group-flush mb-4">
+        <li class="list-group-item"><strong>User Uploads Images:</strong> Users can upload images that they want to analyze.</li>
+        <li class="list-group-item"><strong>Preprocessing:</strong> Images are resized to 224x224 pixels and normalized.</li>
+        <li class="list-group-item"><strong>Model Training:</strong> Users can train models on their datasets.</li>
+        <li class="list-group-item"><strong>User Uploads Weights:</strong> Users can upload custom weights for their trained models.</li>
+        <li class="list-group-item"><strong>Update Configuration File:</strong> The application updates its configuration with new models.</li>
+        <li class="list-group-item"><strong>User Makes Predictions:</strong> Users can make predictions using selected models.</li>
+        <li class="list-group-item"><strong>Generate LIME Explanations:</strong> The application provides explanations for predictions made by the model.</li>
+    </ul>
+</div>
+
+
+        </div>
+
+        <!-- JavaScript to dynamically show input fields based on selected model -->
+
+        <script>
+        const diseases = {{ diseases | tojson }};
         const models = {{ models | tojson }};
+
+        function populateModels() {
+            const diseaseSelect = document.getElementById('disease_select');
+            const modelGroup = document.getElementById('model-group');
+            const modelSelect = document.getElementById('selected_model');
+            const selectedDisease = diseaseSelect.value;
+
+            // Clear previous model options
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+
+            if (selectedDisease && diseases[selectedDisease]) {
+                // Show the model dropdown
+                modelGroup.style.display = 'block';
+
+                // Add "All" option
+                const allOption = document.createElement('option');
+                allOption.value = 'all';
+                allOption.text = 'All (Merge all models)';
+                modelSelect.appendChild(allOption);
+
+                // Add models for this disease
+                diseases[selectedDisease].forEach(function(model) {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.text = model.charAt(0).toUpperCase() + model.slice(1);
+                    modelSelect.appendChild(option);
+                });
+            } else {
+                // Hide the model dropdown if no disease is selected
+                modelGroup.style.display = 'none';
+            }
+
+            // Clear input fields if disease changes
+            document.getElementById('input-fields').innerHTML = '';
+        }
 
         function showInputs() {
             const selectedModel = document.getElementById('selected_model').value;
             const inputFieldsDiv = document.getElementById('input-fields');
             inputFieldsDiv.innerHTML = ''; // Clear previous inputs
 
-            if (selectedModel) {
+            if (selectedModel && selectedModel !== 'all' && models[selectedModel]) {
                 const params = models[selectedModel].features; // Assuming features are defined in the config
                 params.forEach(param => {
                     const label = document.createElement('label');
@@ -184,11 +320,63 @@
         }
     </script>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <!-- Place this before the closing </body> tag or in your JS file -->
+        <script>
+const dropArea = document.getElementById('drop-area');
+const fileInput = document.getElementById('image_file');
+const preview = document.getElementById('preview');
 
-</body>
+// Highlight drop area on drag
+['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.add('dragover');
+    }, false);
+});
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.remove('dragover');
+    }, false);
+});
+
+// Handle dropped files
+dropArea.addEventListener('drop', e => {
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    fileInput.files = files;
+    handleFiles(files);
+});
+
+// When file is selected using the input
+function handleFiles(files) {
+    preview.innerHTML = '';
+    if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '<span class="text-danger">Not a valid image file.</span>';
+        }
+    }
+}
+</script>
+
+        <!-- Bootstrap JS and dependencies -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script
+            src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    </body>
 
 </html>

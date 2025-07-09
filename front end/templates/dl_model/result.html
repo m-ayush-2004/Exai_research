@@ -137,10 +137,34 @@
         <p>Coordinates: <span id="segment-coords">-</span></p>
       </div>
     </div>
-
+    <div class="plot-container" id="plots"></div>
     <!-- Add this CSS to your stylesheet -->
 
   </body>
+<script>
+  const modelPlots = {{ model_plots | tojson }};
+  const plotsDiv = document.getElementById('plots');
+  console.log(modelPlots)
+  for (const [plotName, plotPath] of Object.entries(modelPlots)) {
+    const card = document.createElement('div');
+    card.className = 'plot-card';
+
+    if (plotPath.endsWith('.png') || plotPath.endsWith('.jpg') || plotPath.endsWith('.jpeg')) {
+      const img = document.createElement('img');
+      img.src = '/plots/' + plotPath; // Use your custom route
+      img.alt = plotName;
+      card.appendChild(img);
+    } else if (plotName === 'classification_report') {
+      const reportDiv = document.createElement('div');
+      fetch('/plots/' + plotPath)
+        .then(response => response.text())
+        .then(text => { reportDiv.textContent = text; });
+      card.appendChild(reportDiv);
+    }
+    plotsDiv.appendChild(card);
+  }
+</script>
+
   <script>
 // Initialize Plotly graph with LIME segmentation data
 const graphJson = {{ graph_json | safe }};
@@ -241,5 +265,5 @@ document.addEventListener('keydown', (e) => {
     );
   }
 });
-</script>
+ </script>
 </html>

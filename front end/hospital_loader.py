@@ -29,7 +29,7 @@ def fetch_nearby_hospitals(latitude, longitude, radius=5000):
     
     # Send request to Overpass API
     response = requests.get(overpass_url, params={'data': overpass_query})
-    
+    print(overpass_query)
     if response.status_code == 200:
         data = response.json()
         hospitals = []

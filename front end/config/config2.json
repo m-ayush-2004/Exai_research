@@ -1,7 +1,28 @@
 {
-    "models": {
-        "Brain Tumor": "Back end\\weights\\Brain Tumor2\\ckpt2",
-        "COVID-19": "Back end\\weights\\COVID-19\\ckpt3",
-        "Brain Tumor2": "Back end\\weights\\Brain Tumor2\\ckpt2"
+  "models": {
+    "resnet50": {
+      "Brain-Tumor": {
+        "weights": "./Datasets/weights/resnet50/Brain-Tumor/Brain-Tumor.h5",
+        "num_class": 2,
+        "class_name": ["Tumor", "Normal"]
+      },
+      "Lung-Adenocarcinoma": {
+        "weights": "./Datasets/weights/resnet50/Lung-Adenocarcinoma/Lung-Adenocarcinoma.h5",
+        "num_class": 3,
+        "class_name": ["Tumor", "Normal", "efverv"]
+      }
+    },
+    "inceptionv3": {
+      "Brain-Tumor": {
+        "weights": "./Datasets/weights/inceptionv3/Brain-Tumor/Brain-Tumor.h5",
+        "num_class": 2,
+        "class_name": ["Tumor", "Normal"]
+      },
+      "Lung-Adenocarcinoma": {
+        "weights": "./Datasets/weights/inceptionv3/Lung-Adenocarcinoma/Lung-Adenocarcinoma.h5",
+        "num_class": 3,
+        "class_name": ["Tumor", "Normal", "vefe"]
+      }
     }
+  }
 }

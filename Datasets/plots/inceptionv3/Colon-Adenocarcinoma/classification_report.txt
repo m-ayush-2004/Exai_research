@@ -1,0 +1,8 @@
+              precision    recall  f1-score   support
+
+   colon_aca       0.85      0.87      0.86       450
+     colon_n       0.87      0.85      0.86       450
+
+    accuracy                           0.86       900
+   macro avg       0.86      0.86      0.86       900
+weighted avg       0.86      0.86      0.86       900
