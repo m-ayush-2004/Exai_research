@@ -4,97 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediction Result</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        h2 {
-            color: #555;
-            text-align: center;
-        }
-        #heatmap {
-            display: block;
-            margin: 0 auto 20px; /* Center the image */
-            max-width: 100%; /* Responsive image */
-            height: auto; /* Maintain aspect ratio */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Subtle shadow */
-        }
-        #plot {
-            width: 100%; /* Full width */
-            height: 600px; /* Fixed height for the plot */
-            margin-top: 20px; /* Space above the plot */
-        }
-        .tooltip {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 1px solid #ccc;
-            padding: 5px;
-            display: none; /* Hidden by default */
-            z-index: 20; /* Above segments */
-            pointer-events: none; /* Prevent mouse events */
-            transition: opacity 0.3s;
-            border-radius: 5px;
-        }
-  #lime-plot {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .segment-color {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-    margin-right: 8px;
-  }
-  
-  #segment-list li {
-    cursor: pointer;
-    padding: 8px;
-    transition: all 0.2s;
-  }
-  
-  #segment-list li:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .disabled-segment {
-    opacity: 0.4;
-    text-decoration: line-through;
-  }
-  
-  .segment-weight {
-    float: right;
-    color: #666;
-    font-family: monospace;
-  }
-    </style>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Bootstrap & Plotly -->
     <link rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(120deg, #f4f6f8 60%, #e0eaff 100%);
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            border-bottom: 1.5px solid #e0e0e0;
+            background: #fff;
+        }
+        .container-fluid {
+            max-width: 100vw;
+            padding: 0;
+        }
+        .full-width-section {
+            width: 80vw;
+            margin-left: 10vw;
+            margin-right: 10vw;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            color: #1e90ff;
+            font-weight: 700;
+            margin: 28px 0 16px 0;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title svg {
+            margin-right: 10px;
+        }
+        .row.no-gutters {
+            margin-right: 0;
+            margin-left: 0;
+        }
+        .half-screen {
+            width: 50%;
+            min-width: 320px;
+            max-width: 100vw;
+            display: inline-block;
+            vertical-align: top;
+            box-sizing: border-box;
+            padding: 0 8px;
+        }
+        .eval-card {
+            background: linear-gradient(135deg, #eaf6ff 70%, #f9f9fb 100%);
+            border-radius: 18px;
+            border: 1.5px solid #b4d8fd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 420px;
+            height: 38vw;
+            max-height: 520px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 12px rgba(30,144,255,0.07);
+            transition: box-shadow 0.2s;
+        }
+        .eval-card:hover {
+            box-shadow: 0 4px 28px rgba(30,144,255,0.18);
+        }
+        .eval-label {
+            font-weight: 600;
+            font-size: 1.12rem;
+            margin-bottom: 10px;
+            color: #1e90ff;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+        .eval-label svg {
+            margin-right: 7px;
+        }
+        .zoomable-img {
+            width: 94%;
+            height: 320px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid #d3e3fa;
+            margin-bottom: 5px;
+            cursor: zoom-in;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .zoomable-img:hover {
+            box-shadow: 0 2px 18px rgba(30,144,255,0.13);
+            transform: scale(1.025);
+        }
+        .zoomed {
+            position: fixed !important;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999;
+            background: rgba(0,0,0,0.95);
+            object-fit: contain;
+            margin: 0 !important;
+            cursor: zoom-out;
+            transition: transform 0.2s;
+        }
+        @media (max-width: 900px) {
+            .half-screen {
+                width: 100vw;
+                display: block;
+                padding: 0;
+            }
+            .full-width-section {
+                width: 98vw;
+                margin-left: 1vw;
+                margin-right: 1vw;
+            }
+            .eval-card {
+                min-height: 220px;
+                height: auto;
+                max-height: unset;
+            }
+            .zoomable-img {
+                height: 160px;
+            }
+        }
+    </style>
   </head>
   <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-      <a class="navbar-brand" href="/">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+      <a class="navbar-brand d-flex align-items-center" href="/">
         <img
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
-          alt="Logo" style="width:30px; height:auto;">
-        Medical Dashboard
+          alt="Logo" style="width:32px; height:auto; margin-right:8px;">
+        <span style="font-weight:600; color:#1e90ff;">Medical Dashboard</span>
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse"
         data-target="#navbarNav">
@@ -118,152 +162,249 @@
         </ul>
       </div>
     </nav>
-    <br><br><br>
-    <h1>Prediction Heatmap</h1>
+    <div style="height:70px;"></div>
 
-    <h2>Generated Heatmap:</h2>
-    <img
-      src="{{ url_for('static', filename='shap_plots/' + heatmap_path.split('/')[-1]) }}"
-      alt="Heatmap" id="heatmap">
+    <div class="container-fluid">
+      <!-- Prediction Heatmap -->
+      <div class="full-width-section">
+        <div class="section-title">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><circle
+              cx="12" cy="12" r="10" stroke="#1e90ff" stroke-width="2" /><path
+              d="M8 12l2.5 2.5L16 9" stroke="#1e90ff" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" /></svg>
+          Prediction Heatmap
+        </div>
+        <img
+          src="{{ url_for('static', filename='shap_plots/' + heatmap_path.split('/')[-1]) }}"
+          alt="Heatmap" class="zoomable-img" id="heatmap-img">
+      </div>
 
-    <div id="lime-plot"></div>
-    <div id="segment-panel">
-      <h4>Segments</h4>
-      <ul id="segment-list"></ul>
-      <div id="segment-details">
-        <p>ID: <span id="segment-id">-</span></p>
-        <p>Weight: <span id="segment-weight">-</span></p>
-        <p>Rank: <span id="segment-rank">-</span></p>
-        <p>Coordinates: <span id="segment-coords">-</span></p>
+      <!-- Evaluation Matrix: Confusion Matrix and Metrics Side by Side (Dynamic) -->
+      {% if model_plots.get('confusion_matrix') or
+      model_plots.get('metrics_summary') %}
+      <div class="full-width-section">
+        <div class="section-title">
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><rect
+              x="2" y="2" width="20" height="20" rx="5" stroke="#1e90ff"
+              stroke-width="2" /><path d="M2 8h20M8 2v20" stroke="#1e90ff"
+              stroke-width="2" /></svg>
+          Evaluation Matrix
+        </div>
+        <div class="row no-gutters" style="display: flex;">
+          {% if model_plots.get('confusion_matrix') %}
+          <div class="half-screen">
+            <div class="eval-card">
+              <div class="eval-label">
+                <svg width="20" height="20" fill="none"
+                  viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"
+                    rx="4" stroke="#1e90ff" stroke-width="2" /><rect x="7" y="7"
+                    width="4" height="4" rx="1" fill="#1e90ff" /><rect x="13"
+                    y="13" width="4" height="4" rx="1" fill="#1e90ff" /></svg>
+                Confusion Matrix
+              </div>
+              <img
+                src="/plots/{{ model_plots['confusion_matrix'] }}"
+                alt="Confusion Matrix" class="zoomable-img"
+                id="conf-matrix-img">
+            </div>
+          </div>
+          {% endif %}
+          {% if model_plots.get('metrics_summary') %}
+          <div class="half-screen">
+            <div class="eval-card">
+              <div class="eval-label">
+                <svg width="20" height="20" fill="none"
+                  viewBox="0 0 24 24"><path
+                    d="M4 17v-2a4 4 0 014-4h8a4 4 0 014 4v2" stroke="#1e90ff"
+                    stroke-width="2" /><circle cx="12" cy="7" r="4"
+                    stroke="#1e90ff" stroke-width="2" /></svg>
+                Metrics
+              </div>
+              <img
+                src="/plots/{{ model_plots['metrics_summary'] }}"
+                alt="Metrics" class="zoomable-img" id="metrics-img">
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- LIME Plot Full Width -->
+      <div class="full-width-section">
+        <div class="section-title">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><rect
+              x="2" y="2" width="20" height="20" rx="5" stroke="#1e90ff"
+              stroke-width="2" /><path d="M8 8h8v8H8z" stroke="#1e90ff"
+              stroke-width="2" /></svg>
+          LIME Segmentation Visualization
+        </div>
+        <div id="lime-plot" class="plot-full"></div>
+      </div>
+
+      <!-- All Other Plots Full Width -->
+      <div class="full-width-section">
+        <div class="section-title">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><rect
+              x="2" y="2" width="20" height="20" rx="5" stroke="#1e90ff"
+              stroke-width="2" /><path d="M7 17l5-5 5 5" stroke="#1e90ff"
+              stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" /></svg>
+          Other Model Plots & Reports
+        </div>
+        <div id="plots" class="plot-full"></div>
       </div>
     </div>
-    <div class="plot-container" id="plots"></div>
-    <!-- Add this CSS to your stylesheet -->
 
-  </body>
-<script>
-  const modelPlots = {{ model_plots | tojson }};
-  const plotsDiv = document.getElementById('plots');
-  console.log(modelPlots)
-  for (const [plotName, plotPath] of Object.entries(modelPlots)) {
-    const card = document.createElement('div');
-    card.className = 'plot-card';
+    <!-- Bootstrap and Plotly JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script>
+    // Zoomable images
+    document.querySelectorAll('.zoomable-img').forEach(img => {
+        img.addEventListener('click', function() {
+            if (!img.classList.contains('zoomed')) {
+                img.classList.add('zoomed');
+                document.body.style.overflow = 'hidden';
+            } else {
+                img.classList.remove('zoomed');
+                document.body.style.overflow = '';
+            }
+        });
+    });
 
-    if (plotPath.endsWith('.png') || plotPath.endsWith('.jpg') || plotPath.endsWith('.jpeg')) {
-      const img = document.createElement('img');
-      img.src = '/plots/' + plotPath; // Use your custom route
-      img.alt = plotName;
-      card.appendChild(img);
-    } else if (plotName === 'classification_report') {
-      const reportDiv = document.createElement('div');
-      fetch('/plots/' + plotPath)
+    // LIME Plot (full width, zoomable)
+    const graphJson = {{ graph_json | safe }};
+    Plotly.newPlot('lime-plot', graphJson.data, graphJson.layout, {
+        responsive: true,
+        scrollZoom: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: [],
+        toImageButtonOptions: {
+            format: 'png',
+            filename: 'lime_plot',
+            height: 800,
+            width: 1600,
+            scale: 2
+        }
+    });
+
+    // Other model plots (full width, zoomable)
+    const modelPlots = {{ model_plots | tojson }};
+    const plotsDiv = document.getElementById('plots');
+    for (const [plotName, plotPath] of Object.entries(modelPlots)) {
+        // Skip confusion and metrics here, already shown above
+        if (plotName === 'confusion_matrix' || plotName === 'metrics_summary') continue;
+        const plotContainer = document.createElement('div');
+        plotContainer.style.width = "80vw";
+        plotContainer.style.margin = "0 auto 30px auto";
+        plotContainer.style.background = "none";
+        plotContainer.style.padding = "0";
+        if (plotPath.endsWith('.png') || plotPath.endsWith('.jpg') || plotPath.endsWith('.jpeg')) {
+            const img = document.createElement('img');
+            img.src = '/plots/' + plotPath;
+            img.alt = plotName;
+            img.className = 'zoomable-img';
+            img.style.width = "100%";
+            img.style.height = "auto";
+            plotContainer.appendChild(img);
+        } else if (plotName === 'classification_report') {
+    const reportDiv = document.createElement('div');
+    fetch('/plots/' + plotPath)
         .then(response => response.text())
-        .then(text => { reportDiv.textContent = text; });
-      card.appendChild(reportDiv);
-    }
-    plotsDiv.appendChild(card);
-  }
-</script>
-
-  <script>
-// Initialize Plotly graph with LIME segmentation data
-const graphJson = {{ graph_json | safe }};
-
-// Enhanced configuration for medical imaging visualization
-const layoutConfig = {
-  responsive: true,
-  displayModeBar: true,
-  modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'hoverClosestCartesian'],
-  modeBarButtonsToAdd: ['drawclosedpath', 'eraseshape'],
-  scrollZoom: true
-};
-
-// Create the plot with specialized medical imaging settings
-Plotly.newPlot('lime-plot', graphJson.data, graphJson.layout, layoutConfig);
-
-// Get plot element reference
-const limePlotDiv = document.getElementById('lime-plot');
-
-// Custom hover handler for LIME segments
-limePlotDiv.on('plotly_hover', function(eventData) {
-  const point = eventData.points[0];
-  const segmentData = {
-    id: point.customdata[0],
-    weight: point.customdata[1],
-    rank: point.customdata[2],
-    x: Math.round(point.x),
-    y: Math.round(point.y)
-  };
-  
-  // Update side panel display
-  document.getElementById('segment-id').textContent = segmentData.id;
-  document.getElementById('segment-weight').textContent = segmentData.weight.toFixed(4);
-  document.getElementById('segment-rank').textContent = segmentData.rank;
-  document.getElementById('segment-coords').textContent = `${segmentData.x}, ${segmentData.y}`;
-  
-  // Highlight corresponding segment
-  Plotly.Fx.hover('lime-plot', [
-    { curveNumber: point.curveNumber, pointNumber: point.pointNumber }
-  ]);
-});
-
-// Custom click handler for segment selection
-limePlotDiv.on('plotly_click', function(eventData) {
-  const point = eventData.points[0];
-  const segmentId = point.customdata[0];
-  
-  // Toggle segment visibility
-  const visible = graphJson.data[point.curveNumber].visible;
-  Plotly.restyle('lime-plot', {visible: !visible}, [point.curveNumber]);
-  
-  // Update segment list styling
-  const listItem = document.querySelector(`#segment-list li[data-segment-id="${segmentId}"]`);
-  if (listItem) {
-    listItem.classList.toggle('disabled-segment');
-  }
-});
-
-// Handle window resize for responsive design
-window.addEventListener('resize', function() {
-  Plotly.Plots.resize('lime-plot');
-});
-
-// Initialize segment list sidebar
-function initSegmentList() {
-  const segmentList = document.getElementById('segment-list');
-  graphJson.data.forEach((trace, index) => {
-    if (trace.name) {
-      const li = document.createElement('li');
-      li.dataset.segmentId = trace.customdata[0][0];
-      li.innerHTML = `
-        <span class="segment-color" style="background:${trace.line.color}"></span>
-        ${trace.name}
-        <span class="segment-weight">${trace.customdata[0][1].toFixed(4)}</span>
-      `;
-      li.addEventListener('click', () => toggleSegmentVisibility(index));
-      segmentList.appendChild(li);
-    }
-  });
+        .then(text => {
+            reportDiv.innerHTML = createClassificationReportTable(text);
+        });
+    plotContainer.appendChild(reportDiv);
 }
 
-function toggleSegmentVisibility(curveNumber) {
-  const currentVisibility = graphJson.data[curveNumber].visible;
-  Plotly.restyle('lime-plot', {visible: !currentVisibility}, [curveNumber]);
+// Add this function to your JS (outside the loop)
+function createClassificationReportTable(reportText) {
+    // Split the text into lines and filter out empty lines
+    const lines = reportText.trim().split('\n').filter(line => line.trim() !== '');
+
+    // Find the header line index (contains precision, recall, f1-score, support)
+    let headerIndex = -1;
+    for (let i = 0; i < lines.length; i++) {
+        if (/precision\s+recall\s+f1-score\s+support/.test(lines[i])) {
+            headerIndex = i;
+            break;
+        }
+    }
+    if (headerIndex === -1) {
+        return '<p>Invalid classification report format.</p>';
+    }
+
+    // Extract data lines after header
+    const dataLines = lines.slice(headerIndex + 1);
+
+    // Prepare rows array
+    const rows = [];
+
+    // Regex to split line by multiple spaces but keep class names intact
+    const lineRegex = /^\s*(.*?)\s{2,}(\d*\.\d+)\s+(\d*\.\d+)\s+(\d*\.\d+)\s+(\d+)\s*$/;
+
+    // Special handling for accuracy line (which has different format)
+    const accuracyRegex = /^\s*accuracy\s+(\d*\.\d+)\s+(\d+)\s*$/;
+
+    for (const line of dataLines) {
+        if (line.trim() === '') continue;
+        let match = line.match(lineRegex);
+        if (match) {
+            // Normal class line
+            rows.push({
+                className: match[1],
+                precision: match[2],
+                recall: match[3],
+                f1Score: match[4],
+                support: match[5]
+            });
+        } else {
+            // Check if accuracy line
+            let accMatch = line.match(accuracyRegex);
+            if (accMatch) {
+                rows.push({
+                    className: 'accuracy',
+                    precision: '',
+                    recall: '',
+                    f1Score: accMatch[1],
+                    support: accMatch[2]
+                });
+            }
+        }
+    }
+
+    // Build HTML table string
+    let tableHTML = '<div class="table-responsive" style="max-width:700px; margin:auto;">';
+    tableHTML += '<table class="table table-striped table-bordered">';
+    tableHTML += '<thead><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Support</th></tr></thead><tbody>';
+
+    for (const row of rows) {
+        tableHTML += `<tr><td>${row.className}</td><td>${row.precision}</td><td>${row.recall}</td><td>${row.f1Score}</td><td>${row.support}</td></tr>`;
+    }
+
+    tableHTML += '</tbody></table></div>';
+    return tableHTML;
 }
 
-// Initialize after plot renders
-limePlotDiv.on('plotly_afterplot', function() {
-  initSegmentList();
-  console.log('LIME visualization initialized');
-});
-
-// Add keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'h') {
-    Plotly.relayout('lime-plot', 'hovermode', 
-      limePlotDiv.layout.hovermode === 'closest' ? false : 'closest'
-    );
-  }
-});
- </script>
+        plotsDiv.appendChild(plotContainer);
+    }
+    // Make dynamically added images zoomable
+    plotsDiv.addEventListener('click', function(e) {
+        if (e.target.classList.contains('zoomable-img')) {
+            if (!e.target.classList.contains('zoomed')) {
+                e.target.classList.add('zoomed');
+                document.body.style.overflow = 'hidden';
+            } else {
+                e.target.classList.remove('zoomed');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+    </script>
+  </body>
 </html>
