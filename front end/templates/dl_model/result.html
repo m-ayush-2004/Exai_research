@@ -175,7 +175,19 @@
           Prediction Heatmap
         </div>
         <img
-          src="{{ url_for('static', filename='shap_plots/' + heatmap_path.split('/')[-1]) }}"
+          src="{{ url_for('static', filename='lime/' + lime_path.split('/')[-1]) }}"
+          alt="Heatmap" class="zoomable-img" id="heatmap-img" style="object-fit: cover !important;">
+      </div>
+      <div class="full-width-section">
+        <div class="section-title">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24"><circle
+              cx="12" cy="12" r="10" stroke="#1e90ff" stroke-width="2" /><path
+              d="M8 12l2.5 2.5L16 9" stroke="#1e90ff" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" /></svg>
+          Prediction Heatmap
+        </div>
+          <img
+          src="{{ url_for('static', filename='shap/' + shap_path.split('/')[-1]) }}"
           alt="Heatmap" class="zoomable-img" id="heatmap-img">
       </div>
 

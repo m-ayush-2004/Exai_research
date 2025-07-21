@@ -491,9 +491,9 @@ def predict_dl():
         
         if file and model_name:
             print("File uploaded:", file.filename)  # Debugging line
-            images = pf(file , disease_name , model_name)
+            images,shap_path, lime_path = pf(file , disease_name , model_name)
             # Render results in a new template (you'll need to create this template)
-            return render_template('dl_model/result.html', heatmap_path ='/shap_plots/dl_res.png',graph_json={}, model_plots=images)
+            return render_template('dl_model/result.html', heatmap_path =lime_path , lime_path=lime_path, shap_path =shap_path,graph_json={}, model_plots=images)
 
     return render_template('deep_learning.html')  # Redirect back to deep learning page if something goes wrong
 

@@ -14,7 +14,7 @@ def predict(file , disease_name , model_name):
     prediction_result = model.predict(image_array)
     print(prediction_result)
     # Generate LIME explanation for the prediction
-    segment_info,path = generate_lime_heatmap_and_explanation(model=model, image=image_array[0],num_segments_to_select=5, model_name=model_name, disease_name=disease_name)
+    segment_info,path,shap_path, lime_path = generate_lime_heatmap_and_explanation(model=model, image=image_array[0],num_segments_to_select=2, model_name=model_name, disease_name=disease_name)
     # Create a Plotly figure with segments and hover information
     # fig = go.Figure()
     # for segment in segment_info:
@@ -33,4 +33,4 @@ def predict(file , disease_name , model_name):
     # graph_json = fig
     images= fetch_existing_plot_filepaths(model_name,disease_name)
     print(images)
-    return images
+    return images,shap_path, lime_path
