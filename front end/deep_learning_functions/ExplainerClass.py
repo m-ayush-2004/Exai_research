@@ -82,6 +82,7 @@ def generate_lime_heatmap_and_explanation(model, model_name , disease_name, imag
         hide_color=1,
         distance_metric='cosine', 
         num_samples=150,
+        
         segmentation_fn=lambda x: slic(x, n_segments=np.unique(superpixels).shape[0])
     )
     
