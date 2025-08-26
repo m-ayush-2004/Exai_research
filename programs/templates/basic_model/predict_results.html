@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prediction Result</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg, #f4f6f8 60%, #e0eaff 100%);
+      margin: 0;
+      padding: 0;
+    }
+
+    .navbar {
+      border-bottom: 1.5px solid #e0e0e0;
+      background: #fff;
+    }
+
+    .container-fluid {
+      max-width: 100vw;
+      padding: 0;
+    }
+
+    .full-width-section {
+      width: 80vw;
+      margin-left: 10vw;
+      margin-right: 10vw;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      color: #1e90ff;
+      font-weight: 700;
+      margin: 28px 0 16px 0;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title svg {
+      margin-right: 10px;
+    }
+
+    .row.no-gutters {
+      margin-right: 0;
+      margin-left: 0;
+    }
+
+    .half-screen {
+      width: 50%;
+      min-width: 320px;
+      max-width: 100vw;
+      display: inline-block;
+      vertical-align: top;
+      box-sizing: border-box;
+      padding: 0 8px;
+    }
+
+    .eval-card {
+      background: linear-gradient(135deg, #eaf6ff 70%, #f9f9fb 100%);
+      border-radius: 18px;
+      border: 1.5px solid #b4d8fd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 12px rgba(30, 144, 255, 0.07);
+      transition: box-shadow 0.2s;
+    }
+
+    .eval-card:hover {
+      box-shadow: 0 4px 28px rgba(30, 144, 255, 0.18);
+    }
+
+    .eval-label {
+      font-weight: 600;
+      font-size: 1.12rem;
+      margin-bottom: 10px;
+      color: #1e90ff;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+    }
+
+    .eval-label svg {
+      margin-right: 7px;
+    }
+
+    .zoomable-img {
+      width: 94%;
+      height: 320px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #d3e3fa;
+      margin-bottom: 5px;
+      cursor: zoom-in;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .zoomable-img:hover {
+      box-shadow: 0 2px 18px rgba(30, 144, 255, 0.13);
+      transform: scale(1.025);
+    }
+
+    .zoomed {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.95);
+      object-fit: contain;
+      margin: 0 !important;
+      cursor: zoom-out;
+      transition: transform 0.2s;
+    }
+
+    @media (max-width: 900px) {
+      .half-screen {
+        width: 100vw;
+        display: block;
+        padding: 0;
+      }
+
+      .full-width-section {
+        width: 98vw;
+        margin-left: 1vw;
+        margin-right: 1vw;
+      }
+
+      .eval-card {
+        min-height: 220px;
+        height: auto;
+        max-height: unset;
+      }
+
+      .zoomable-img {
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s" alt="Logo"
+        style="width:32px; height:auto; margin-right:8px;" />
+      <span style="font-weight:600; color:#1e90ff;">Medical Dashboard</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news">News</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/hospitals">Hospitals</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/models">AI Prediction</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div style="height:70px;"></div> 
+
+  <div class="container-fluid">
+<!-- Prediction Result Text Section -->
+<div class="full-width-section">
+  <div class="section-title">
+    <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" stroke="#1e90ff" stroke-width="2" />
+      <path d="M8 12l2.5 2.5L16 9" stroke="#1e90ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    Prediction Result for {{ model_name }}
+  </div>
+  <div class="eval-card" style="min-height: 150px; justify-content: center; padding: 20px; text-align: center;">
+    <strong style="color: #1e90ff;">Result:</strong>
+    {% if result == 0 %}
+      <p>The person does <strong>NOT</strong> have the probability of {{ model_name }}.</p>
+    {% else %}
+      <p>{{ result }}</p>
+    {% endif %}
+    {{explanation_str}}
+  </div>
+</div>
+
+<!-- SHAP Force Plot Zoomable Section -->
+<div class="full-width-section">
+  <div class="section-title">
+    <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" stroke="#1e90ff" stroke-width="2" />
+      <path d="M8 12l2.5 2.5L16 9" stroke="#1e90ff" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </svg>
+    SHAP Force Plot
+  </div>
+  <div style="display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+    <img src="/ml_plots{{ force_plot }}" alt="SHAP Force Plot" 
+      class="zoomable-img" style="width: 100%;height: auto; border-radius: 12px; object-fit: contain;" />
+  </div>
+</div>
+
+    <!-- Visualizations Section -->
+    <div class="full-width-section">
+      <div class="section-title">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="#1e90ff" stroke-width="2" />
+          <path d="M8 12l2.5 2.5L16 9" stroke="#1e90ff" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Visualizations for {{ model_name | capitalize }}
+      </div>
+
+      <div class="row no-gutters" style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+
+        <div class="half-screen">
+          <div class="eval-card">
+            <div class="eval-label">
+              Pair Plot
+            </div>
+            <p style="padding: 0 15px; font-size: 0.9rem; flex-grow: 1;">
+              A pairplot is a powerful data visualization tool used to explore and understand the pairwise
+              relationships between multiple variables in a dataset. It is particularly useful in the context of
+              exploratory data analysis, allowing analysts to quickly visualize correlations and distributions among
+              variables.
+            </p>
+            <img src="/ml_plots{{ pair_plot_path }}" alt="Pair Plot" class="zoomable-img" />
+          </div>
+        </div>
+
+        <div class="half-screen">
+          <div class="eval-card">
+            <div class="eval-label">
+              SHAP Summary Plot
+            </div>
+            <p style="padding: 0 15px; font-size: 0.9rem; flex-grow: 1;">
+              A SHAP summary plot is a visualization tool used to interpret the output of machine learning models by
+              displaying the importance and effect of each feature on the model's predictions. SHAP (SHapley Additive
+              exPlanations) values quantify how much each feature contributes to the final prediction for each instance
+              in the dataset.
+            </p>
+            <img src="/ml_plots{{ shap_plot_path }}" alt="SHAP Summary Plot" class="zoomable-img" />
+          </div>
+        </div>
+
+        <div class="half-screen">
+          <div class="eval-card">
+            <div class="eval-label">
+              Correlation Plot
+            </div>
+            <p style="padding: 0 15px; font-size: 0.9rem; flex-grow: 1;">
+              A correlation plot is a graphical representation that illustrates the relationship between two or more
+              variables. It visually conveys how changes in one variable are associated with changes in another,
+              allowing for the identification of patterns, trends, and potential correlations.
+            </p>
+            <img src="/ml_plots{{ corr }}" alt="Correlation Plot" class="zoomable-img" />
+          </div>
+        </div>
+
+      </div>
+
+      <form action="/basic_models" method="get" style="text-align: center; margin-top: 25px;">
+        <button type="submit" class="btn btn-primary">Get Started with Predictions</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // Enable zoomable images
+    document.querySelectorAll('.zoomable-img').forEach(img => {
+      img.addEventListener('click', function () {
+        if (!img.classList.contains('zoomed')) {
+          img.classList.add('zoomed');
+          document.body.style.overflow = 'hidden';
+        } else {
+          img.classList.remove('zoomed');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

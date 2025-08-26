@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Models</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/style_sheets.css">
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .heading {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .section-title {
+            color: #343a40;
+            margin-top: 30px;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="/">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+                alt="Logo"> <!-- Replace with your logo URL -->
+            Medical Dashboard
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news">News</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hospitals">Hospitals</a>
+                </li>
+                <!-- <li class="nav-item">
+          <a class="nav-link" href="/search">Disease Search</a>
+        </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/models">AI Prediction</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <br><br><br>
+        <h1 class="heading" style="font-size: 35px;color: #24609f;">Choose a Model for Disease Prediction</h1>
+
+        <form action="{{ url_for('basic_models_route') }}" method="post" class="mb-4">
+            <h3 class="section-title">Select a Basic Model</h3>
+            <p class="info-text">
+                Select one of the pre-trained models below to generate predictions for specific diseases.
+                Fill in the input fields that appear based on your selection, and then click "Predict" to get results.
+            </p>
+            <br><br>
+            <div class="form-group">
+                <label for="selected_model">Choose Basic Model:</label>
+                <select name="selected_model" id="selected_model" class="form-control" required onchange="showInputs()">
+                    <option value="">Select Model</option>
+                    {% for model in models.keys() %}
+                    <option value="{{ model }}">{{ model.capitalize() }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="input-fields" class="form-group"></div>
+
+            <button type="submit" class="btn btn-custom">Predict</button>
+        </form>
+        <br><br>
+        <!-- Section to add a custom model -->
+        <form action="{{ url_for('add_custom_model') }}" method="get" enctype="multipart/form-data">
+            <h3 class="section-title">Add a Custom Model</h3>
+            <p class="info-text">
+                Don't see the model you need? Add your custom dataset to train a new model. This will allow our system
+                to create a tailored XGBoost model for you automatically. Simply upload your dataset, specify the target
+                column, and let the system handle the rest.
+            </p>
+            <br><br>
+            <button type="submit" class="btn btn-custom">Add Custom Model</button>
+        </form>
+
+        <!-- JavaScript to dynamically show input fields based on selected model -->
+        <script>
+            const models = {{ models | tojson }};
+
+            function showInputs() {
+                const selectedModel = document.getElementById('selected_model').value;
+                const inputFieldsDiv = document.getElementById('input-fields');
+                inputFieldsDiv.innerHTML = ''; // Clear previous inputs
+
+                if (selectedModel) {
+                    const params = models[selectedModel].features;
+                    params.forEach(param => {
+                        const label = document.createElement('label');
+                        label.innerText = param.charAt(0).toUpperCase() + param.slice(1) + ':';
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = param;
+                        input.className = 'form-control mb-2';
+                        input.placeholder = `Enter ${param}`;
+                        inputFieldsDiv.appendChild(label);
+                        inputFieldsDiv.appendChild(input);
+                    });
+                }
+            }
+        </script>
+    </div>
+</body>
+
+</html>

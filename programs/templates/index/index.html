@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Medical Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .navbar-brand img {
+      height: 40px;
+    }
+
+    .hero {
+      background-image: url('https://www.example.com/hero-image.jpg');
+      /* Replace with your image URL */
+      background-size: cover;
+      background-position: center;
+      color: rgb(49, 49, 49);
+      padding: 150px 0;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 60px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .services .card {
+      transition: transform 0.3s;
+    }
+
+    .services .card:hover {
+      transform: translateY(-10px);
+    }
+
+    .testimonial {
+      background-color: #f8f9fa;
+      padding: 60px 0;
+    }
+
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 30px 0;
+    }
+
+    .footer a {
+      color: #adb5bd;
+    }
+
+    .footer a:hover {
+      color: white;
+      text-decoration: none;
+    }
+
+    .search-bar {
+      padding: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="/">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s"
+        alt="Logo"> <!-- Replace with your logo URL -->
+      Medical Dashboard
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news">News</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/hospitals">Hospitals</a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="/search">Disease Search</a>
+        </li> -->
+        <li class="nav-item">
+          <a class="nav-link" href="/models">AI Prediction</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome to Medical Dashboard</h1>
+      <p>Your Health, Our Priority</p>
+      <a href="#services" class="btn btn-primary btn-lg">Explore Services</a>
+    </div>
+  </section>
+
+  <!-- Search Bar Section -->
+  <section class="search-bar">
+    <div class="container">
+      <form action="/search" method="GET" class="form-inline justify-content-center">
+        <input class="form-control mr-sm-2" type="search" name="query" placeholder="Search for a disease..."
+          aria-label="Search" required />
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+          Search
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services py-5" id="services">
+    <div class="container">
+      <h2 class="text-center mb-5">Our Services</h2>
+      <div class="row">
+        <!-- Card 1 -->
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbwLjnHJkvDEK7U-ncKt0OsX6M76Cho5aygA&s"
+              class="card-img-top" alt="AI Prediction" />
+            <div class="card-body">
+              <h5 class="card-title">AI Prediction</h5>
+              <p class="card-text">
+                Upload medical images for AI-assisted diagnosis using advanced deep learning models.
+              </p>
+              <a href="/models" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <img src="../assets/news.jpg" class="card-img-top" alt="Latest News" />
+            <div class="card-body">
+              <h5 class="card-title">Latest News</h5>
+              <p class="card-text">
+                Stay updated with the latest medical news and health innovations around the world.
+              </p>
+              <a href="/news" class="btn btn-primary">Read News</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <img src="https://www.example.com/nearby-hospitals.jpg" class="card-img-top" alt="Nearby Hospitals" />
+            <div class="card-body">
+              <h5 class="card-title">Nearby Hospitals</h5>
+              <p class="card-text">
+                Find hospitals near you with our integrated location services and maps.
+              </p>
+              <a href="/hospitals" class="btn btn-primary">Find Hospitals</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer text-center">
+    <div class="container">
+      <p>&copy; 2024 Medical Dashboard. All Rights Reserved.</p>
+      <p>
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

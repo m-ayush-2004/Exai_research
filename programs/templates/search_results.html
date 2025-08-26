@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #343a40;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Search Results for "{{ query }}"</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/news">Latest News</a></li>
+                <li><a href="/hospitals">Nearby Hospitals</a></li>
+                <li><a href="/search">Search Diseases</a></li>
+                <li><a href="/predict">AI Prediction</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ info['title'] }}</h2>
+                    </div>
+                </div>
+
+                {% if info['symptoms'] %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Symptoms</h3>
+                        {% for symptom in info['symptoms'].splitlines() %}
+                        <p>{{ symptom.strip() }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Symptoms</h3>
+                        <p>No symptoms information available.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if info['causes'] %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Causes</h3>
+                        {% for cause in info['causes'].splitlines() %}
+                        <p>{{ cause.strip() }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Causes</h3>
+                        <p>No causes information available.</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if info['treatment'] %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Treatment</h3>
+                        {% for treatment in info['treatment'].splitlines() %}
+                        <p>{{ treatment.strip() }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Treatment</h3>
+                        <p>No treatment information available.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Carousel for additional information or related content -->
+        <div id="relatedContentCarousel" class="carousel slide mt-4" data-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://via.placeholder.com/800x400?text=Related+Content+1" class="d-block w-100" alt="Related Content 1">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Related Content 1</h5>
+                        <p>Description for related content 1.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://via.placeholder.com/800x400?text=Related+Content+2" class="d-block w-100" alt="Related Content 2">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Related Content 2</h5>
+                        <p>Description for related content 2.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="https://via.placeholder.com/800x400?text=Related+Content+3" class="d-block w-100" alt="Related Content 3">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5>Related Content 3</h5>
+                        <p>Description for related content 3.</p>
+                    </div>
+                </div>
+            </div>
+            <a class="carousel-control-prev" href="#relatedContentCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#relatedContentCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Medical Dashboard. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Model Visualizations - {{ model_name }}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg, #f4f6f8 60%, #e0eaff 100%);
+      margin: 0;
+      padding-top: 70px;
+    }
+
+    .container-fluid {
+      max-width: 100vw;
+      padding: 0;
+    }
+
+    .full-width-section {
+      width: 80vw;
+      margin-left: 10vw;
+      margin-right: 10vw;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      color: #1e90ff;
+      font-weight: 700;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title svg {
+      margin-right: 10px;
+    }
+
+    .zoomable-img {
+      width: 100%;
+      max-height: 520px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid #d3e3fa;
+      cursor: zoom-in;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .zoomable-img:hover {
+      box-shadow: 0 2px 18px rgba(30, 144, 255, 0.13);
+      transform: scale(1.025);
+    }
+
+    .zoomed {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.95);
+      object-fit: contain;
+      margin: 0 !important;
+      cursor: zoom-out;
+      transition: transform 0.2s;
+    }
+
+    .btn-center {
+      text-align: center;
+      margin-top: 30px;
+      margin-bottom: 50px;
+    }
+
+    @media (max-width: 900px) {
+      .full-width-section {
+        width: 95vw;
+        margin-left: 2.5vw;
+        margin-right: 2.5vw;
+        padding: 20px;
+      }
+    }
+  </style>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../static/style_sheets.css" />
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-light" style="border-bottom:1.5px solid #e0e0e0;">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVhC3--vhdTnItuWGWX3tX8TQ2o8hrZNCbw&s" alt="Logo"
+        style="height:40px; margin-right:8px;" />
+      <span style="font-weight:600; color:#1e90ff;">Medical Dashboard</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/news">News</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/hospitals">Hospitals</a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="/search">Disease Search</a>
+        </li> -->
+        <li class="nav-item">
+          <a class="nav-link" href="/models">AI Prediction</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="full-width-section">
+      <h1 class="section-title">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+          <rect x="2" y="2" width="20" height="20" rx="5" stroke="#1e90ff" stroke-width="2" />
+          <path d="M2 8h20M8 2v20" stroke="#1e90ff" stroke-width="2" />
+        </svg>
+        Confusion Matrix
+      </h1>
+      <p>A matrix showing the prediction accuracy for each class.</p>
+      <img src="/ml_plots{{ fig_cm }}" alt="Confusion Matrix" class="zoomable-img" />
+    </div>
+
+    <div class="full-width-section">
+      <h1 class="section-title">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="#1e90ff" stroke-width="2" />
+        </svg>
+        Pair Plot
+      </h1>
+      <p>
+        A pairplot is a powerful data visualization tool used to explore and understand the pairwise relationships between multiple variables in a dataset. It is particularly useful in the context of exploratory data analysis, allowing analysts to quickly visualize correlations and distributions among variables.
+      </p>
+      <img src="/ml_plots{{ pair_plot_path }}" alt="Pair Plot" class="zoomable-img" />
+    </div>
+
+    <div class="full-width-section">
+      <h1 class="section-title">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="#1e90ff" stroke-width="2" />
+        </svg>
+        SHAP Summary Plot
+      </h1>
+      <p>
+        A SHAP summary plot is a visualization tool used to interpret the output of machine learning models by displaying the importance and effect of each feature on the model's predictions. SHAP (SHapley Additive exPlanations) values quantify how much each feature contributes to the final prediction for each instance in the dataset.
+      </p>
+      <img src="/ml_plots{{ shap_plot_path }}" alt="SHAP Summary Plot" class="zoomable-img" />
+    </div>
+
+    <div class="full-width-section">
+      <h1 class="section-title">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+          <rect x="2" y="2" width="20" height="20" rx="5" stroke="#1e90ff" stroke-width="2" />
+          <path d="M7 17l5-5 5 5" stroke="#1e90ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Correlation Plot
+      </h1>
+      <p>
+        A correlation plot is a graphical representation that illustrates the relationship between two or more variables. It visually conveys how changes in one variable are associated with changes in another, allowing for the identification of patterns, trends, and potential correlations.
+      </p>
+      <img src="/ml_plots{{ corr }}" alt="Correlation Plot" class="zoomable-img" />
+    </div>
+
+    <div class="full-width-section">
+      <h1 class="section-title">
+        <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
+          <path d="M4 17v-2a4 4 0 014-4h8a4 4 0 014 4v2" stroke="#1e90ff" stroke-width="2" />
+          <circle cx="12" cy="7" r="4" stroke="#1e90ff" stroke-width="2" />
+        </svg>
+        Model Insights
+      </h1>
+      <div>
+        {{ report_summary | safe }}
+      </div>
+    </div>
+
+    <div class="btn-center">
+      <form action="/basic_models" method="get">
+        <button type="submit" class="btn btn-primary">Get Started with Predictions</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Zoomable images
+    document.querySelectorAll('.zoomable-img').forEach(img => {
+      img.addEventListener('click', function () {
+        if (!img.classList.contains('zoomed')) {
+          img.classList.add('zoomed');
+          document.body.style.overflow = 'hidden';
+        } else {
+          img.classList.remove('zoomed');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+  </script>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
